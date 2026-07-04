@@ -185,19 +185,19 @@
     <div class="brand-mark">B</div>
     <div>
       <div class="brand-name">Beaconblitz Academy</div>
-      <div class="brand-sub">Ernakulam, Kerala</div>
+      <div class="brand-sub">Kozhikode, Kerala</div>
     </div>
   </div>
 
   <div class="hero">
     <span class="hero-eyebrow" id="heroEyebrow">🎓 Paid Course</span>
-    <h1 id="heroTitle">Start your  career with Beaconblitz Academy</h1>
+    <h1 id="heroTitle">Start your digital marketing career with Beaconblitz Academy</h1>
     <p id="heroSub">Fill in your details and our counsellor will call you with batch dates and fee details.</p>
   </div>
 
   <div class="toggle">
     <button type="button" class="active" data-type="course" onclick="setType('course')">🎓 Paid Course</button>
-    <button type="button" data-type="webinar" onclick="setType('webinar')">🎥 Free Workshop </button>
+    <button type="button" data-type="webinar" onclick="setType('webinar')">🛠️ Free Workshop</button>
   </div>
 
   <form id="regForm" novalidate>
@@ -231,7 +231,7 @@
 
     <div class="field" id="field-place">
       <label for="place">City / Place</label>
-      <input type="text" id="place" placeholder="e.g. Ernakulam">
+      <input type="text" id="place" placeholder="e.g. Kozhikode">
     </div>
 
     <button type="submit" class="submit-btn" id="submitBtn">Start My Registration</button>
@@ -269,11 +269,11 @@
 
   const content = {
     webinar: {
-      eyebrow: '🎥 Free Webinar',
+      eyebrow: '🛠️ Free Workshop',
       heroTitle: "Save your seat — learn digital marketing that actually works",
       heroSub: "Fill in your details below. We'll confirm your spot on WhatsApp within a few hours.",
-      topicLabel: "Which webinar do you want to join?",
-      topicPlaceholder: "Select a webinar",
+      topicLabel: "Which workshop do you want to join?",
+      topicPlaceholder: "Select a workshop",
       submitLabel: "Reserve My Free Seat",
       successTitle: "You're in!",
       successSub: "We've received your registration. Our team will confirm your seat on WhatsApp shortly."
@@ -321,7 +321,7 @@
     if(options.length === 0){
       const o = document.createElement('option');
       o.disabled = true;
-      o.textContent = 'No ' + (type === 'course' ? 'courses' : 'webinars') + ' available right now';
+      o.textContent = 'No ' + (type === 'course' ? 'courses' : 'workshops') + ' available right now';
       select.appendChild(o);
       return;
     }
