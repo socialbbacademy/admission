@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beaconblitz Academy — Registration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+  :root{
+    --violet-deep:#3B0F70;
+    --violet:#6C2BD9;
+    --magenta:#D6409F;
+    --pink:#FF6FA5;
+    --gold:#FFC857;
+    --ink:#1A0B2E;
+    --paper:#FBF7FF;
+    --card:#FFFFFF;
+    --muted:#7A6E8C;
+    --line:#EDE3FB;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Manrope', sans-serif;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(214,64,159,0.20), transparent 60%),
+      radial-gradient(900px 500px at 90% 0%, rgba(108,43,217,0.25), transparent 55%),
+      var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:32px 16px 60px;
+  }
+  h1,h2,h3{font-family:'Sora', sans-serif;}
+  .wrap{width:100%;max-width:560px;}
+
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:22px;
+  }
+  .brand-mark{
+    width:38px;height:38px;border-radius:10px;
+    background:linear-gradient(135deg,var(--violet),var(--magenta));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;color:#fff;font-family:'Sora',sans-serif;font-size:18px;
+    box-shadow:0 6px 16px rgba(108,43,217,0.35);
+  }
+  .brand-name{font-family:'Sora',sans-serif;font-weight:700;font-size:17px;letter-spacing:0.2px;}
+  .brand-sub{font-size:12px;color:var(--muted);margin-top:1px;}
+
+  .hero{
+    position:relative;
+    border-radius:24px;
+    padding:30px 26px 26px;
+    background:linear-gradient(135deg,var(--violet-deep) 0%, var(--violet) 48%, var(--magenta) 100%);
+    color:#fff;
+    overflow:hidden;
+    margin-bottom:20px;
+  }
+  .hero::after{
+    content:"";
+    position:absolute;right:-40px;top:-40px;
+    width:180px;height:180px;border-radius:50%;
+    background:radial-gradient(circle, rgba(255,200,87,0.35), transparent 70%);
+  }
+  .hero-eyebrow{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
+    background:rgba(255,255,255,0.16);
+    padding:6px 12px;border-radius:999px;
+    backdrop-filter:blur(4px);
+  }
+  .hero h1{
+    font-size:26px;line-height:1.25;margin:14px 0 8px;font-weight:800;
+    position:relative;
+  }
+  .hero p{
+    margin:0;font-size:14.5px;color:rgba(255,255,255,0.88);line-height:1.5;
+    position:relative;
+  }
+
+  .toggle{
+    display:flex;background:var(--card);border-radius:999px;padding:5px;
+    box-shadow:0 6px 20px rgba(59,15,112,0.08);
+    margin-bottom:20px;border:1px solid var(--line);
+  }
+  .toggle button{
+    flex:1;border:none;background:transparent;padding:11px 10px;
+    font-family:'Manrope',sans-serif;font-weight:700;font-size:13.5px;
+    color:var(--muted);border-radius:999px;cursor:pointer;
+    transition:all .25s ease;
+  }
+  .toggle button.active{
+    color:#fff;
+    background:linear-gradient(135deg,var(--violet),var(--magenta));
+    box-shadow:0 6px 14px rgba(108,43,217,0.35);
+  }
+
+  form{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:24px;
+    box-shadow:0 10px 30px rgba(59,15,112,0.07);
+  }
+  .field{margin-bottom:17px;}
+  label{
+    display:block;font-size:12.5px;font-weight:700;color:var(--violet-deep);
+    margin-bottom:6px;letter-spacing:0.01em;
+  }
+  input, select{
+    width:100%;padding:12px 14px;border-radius:12px;
+    border:1.5px solid var(--line);
+    font-family:'Manrope',sans-serif;font-size:14.5px;color:var(--ink);
+    background:#FCFAFF;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  input:focus, select:focus{
+    outline:none;border-color:var(--magenta);
+    box-shadow:0 0 0 4px rgba(214,64,159,0.12);
+    background:#fff;
+  }
+  input::placeholder{color:#B7A9CC;}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:5px;}
+  .error{font-size:11.5px;color:#C0264F;margin-top:5px;display:none;}
+  .field.invalid input, .field.invalid select{border-color:#C0264F;}
+  .field.invalid .error{display:block;}
+
+  .row2{display:grid;grid-template-columns:1fr;gap:0;}
+
+  .submit-btn{
+    width:100%;border:none;border-radius:14px;padding:14px;
+    font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#fff;
+    background:linear-gradient(135deg,var(--violet),var(--magenta));
+    cursor:pointer;margin-top:6px;
+    box-shadow:0 10px 22px rgba(108,43,217,0.30);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .submit-btn:hover{transform:translateY(-1px);box-shadow:0 14px 26px rgba(108,43,217,0.38);}
+  .submit-btn:active{transform:translateY(0);}
+
+  .fineprint{
+    text-align:center;font-size:11.5px;color:var(--muted);margin-top:14px;
+  }
+
+  /* success state */
+  .success{
+    display:none;
+    text-align:center;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:40px 26px;
+    box-shadow:0 10px 30px rgba(59,15,112,0.07);
+  }
+  .success .badge{
+    width:64px;height:64px;border-radius:50%;margin:0 auto 16px;
+    background:linear-gradient(135deg,var(--violet),var(--magenta));
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px;color:#fff;
+    box-shadow:0 10px 22px rgba(108,43,217,0.30);
+  }
+  .success h2{margin:0 0 8px;font-size:20px;}
+  .success p{margin:0 0 4px;color:var(--muted);font-size:14px;line-height:1.55;}
+  .success .ref{
+    display:inline-block;margin-top:14px;font-size:12.5px;font-weight:700;
+    color:var(--violet-deep);background:#F3EAFB;padding:7px 14px;border-radius:999px;
+  }
+
+  @media (max-width:420px){
+    .hero h1{font-size:22px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="brand-mark">B</div>
+    <div>
+      <div class="brand-name">Beaconblitz Academy</div>
+      <div class="brand-sub">Kozhikode, Kerala</div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <span class="hero-eyebrow" id="heroEyebrow">🎥 Free Webinar</span>
+    <h1 id="heroTitle">Save your seat — learn digital marketing that actually works</h1>
+    <p id="heroSub">Fill in your details below. We'll confirm your spot on WhatsApp within a few hours.</p>
+  </div>
+
+  <div class="toggle">
+    <button type="button" class="active" data-type="webinar" onclick="setType('webinar')">🎥 Free Webinar</button>
+    <button type="button" data-type="course" onclick="setType('course')">🎓 Paid Course</button>
+  </div>
+
+  <form id="regForm" novalidate>
+
+    <div class="field" id="field-topic">
+      <label id="topicLabel" for="topic">Which webinar do you want to join?</label>
+      <select id="topic" required>
+        <option value="" disabled selected>Loading options…</option>
+      </select>
+      <div class="error">Please select an option</div>
+    </div>
+
+    <div class="field">
+      <label for="name">Full name</label>
+      <input type="text" id="name" placeholder="e.g. Anjali Menon" required>
+      <div class="error">Please enter your name</div>
+    </div>
+
+    <div class="field">
+      <label for="phone">WhatsApp number</label>
+      <input type="tel" id="phone" placeholder="e.g. 9876543210" required>
+      <div class="hint">We'll send your confirmation and joining link here</div>
+      <div class="error">Please enter a valid 10-digit number</div>
+    </div>
+
+    <div class="field">
+      <label for="email">Email address</label>
+      <input type="email" id="email" placeholder="e.g. anjali@email.com" required>
+      <div class="error">Please enter a valid email</div>
+    </div>
+
+    <div class="field" id="field-place">
+      <label for="place">City / Place</label>
+      <input type="text" id="place" placeholder="e.g. Kozhikode">
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">Reserve My Free Seat</button>
+    <div class="fineprint">No spam. Your details are only used to confirm this registration.</div>
+  </form>
+
+  <div class="success" id="successBox">
+    <div class="badge">✓</div>
+    <h2 id="successTitle">You're in!</h2>
+    <p id="successSub">We've received your registration. Our team will confirm your seat on WhatsApp shortly.</p>
+    <div class="ref" id="refCode"></div>
+  </div>
+
+</div>
+
+<script>
+  // ---------------------------------------------------------------
+  // PASTE THE SAME FIREBASE PROJECT CONFIG AS THE ADMIN PANEL HERE
+  // Firebase Console → Project settings → General → Your apps → SDK config
+  // ---------------------------------------------------------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyAOAHOArj4wOYXsX703EZP9SitS3aX6M8c",
+    authDomain: "beaconblitz-academy.firebaseapp.com",
+    databaseURL: "https://beaconblitz-academy-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "beaconblitz-academy",
+    storageBucket: "beaconblitz-academy.firebasestorage.app",
+    messagingSenderId: "212889198140",
+    appId: "1:212889198140:web:e3dd6493071339f1ab6d39"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  let currentType = 'webinar';
+  let liveOptions = { webinar: [], course: [] };
+
+  const content = {
+    webinar: {
+      eyebrow: '🎥 Free Webinar',
+      heroTitle: "Save your seat — learn digital marketing that actually works",
+      heroSub: "Fill in your details below. We'll confirm your spot on WhatsApp within a few hours.",
+      topicLabel: "Which webinar do you want to join?",
+      topicPlaceholder: "Select a webinar",
+      submitLabel: "Reserve My Free Seat",
+      successTitle: "You're in!",
+      successSub: "We've received your registration. Our team will confirm your seat on WhatsApp shortly."
+    },
+    course: {
+      eyebrow: '🎓 Paid Course',
+      heroTitle: "Start your digital marketing career with Beaconblitz Academy",
+      heroSub: "Fill in your details and our counsellor will call you with batch dates and fee details.",
+      topicLabel: "Which course are you interested in?",
+      topicPlaceholder: "Select a course",
+      submitLabel: "Start My Registration",
+      successTitle: "Registration received!",
+      successSub: "Our counsellor will call you within 24 hours with batch dates and fee details."
+    }
+  };
+
+  // Live-updates from the admin panel: only items marked active show up here
+  db.ref('webinars').on('value', snap=>{
+    const data = snap.val() || {};
+    liveOptions.webinar = Object.values(data)
+      .filter(w => w.active)
+      .map(w => w.name);
+    if(currentType === 'webinar') populateTopics('webinar');
+  });
+  db.ref('courses').on('value', snap=>{
+    const data = snap.val() || {};
+    liveOptions.course = Object.values(data)
+      .filter(c => c.active)
+      .map(c => c.name);
+    if(currentType === 'course') populateTopics('course');
+  });
+
+  function populateTopics(type){
+    const c = content[type];
+    const select = document.getElementById('topic');
+    select.innerHTML = '';
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    placeholder.textContent = c.topicPlaceholder;
+    select.appendChild(placeholder);
+
+    const options = liveOptions[type];
+    if(options.length === 0){
+      const o = document.createElement('option');
+      o.disabled = true;
+      o.textContent = 'No ' + (type === 'course' ? 'courses' : 'webinars') + ' available right now';
+      select.appendChild(o);
+      return;
+    }
+    options.forEach(opt=>{
+      const o = document.createElement('option');
+      o.textContent = opt;
+      select.appendChild(o);
+    });
+  }
+
+  function setType(type){
+    currentType = type;
+    document.querySelectorAll('.toggle button').forEach(b=>{
+      b.classList.toggle('active', b.dataset.type === type);
+    });
+    const c = content[type];
+    document.getElementById('heroEyebrow').textContent = c.eyebrow;
+    document.getElementById('heroTitle').textContent = c.heroTitle;
+    document.getElementById('heroSub').textContent = c.heroSub;
+    document.getElementById('topicLabel').textContent = c.topicLabel;
+    document.getElementById('submitBtn').textContent = c.submitLabel;
+    populateTopics(type);
+  }
+
+  function validateField(field, isValid){
+    field.classList.toggle('invalid', !isValid);
+    return isValid;
+  }
+
+  document.getElementById('regForm').addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const topicField = document.getElementById('field-topic');
+    const topic = document.getElementById('topic');
+    const name = document.getElementById('name');
+    const phone = document.getElementById('phone');
+    const email = document.getElementById('email');
+
+    let ok = true;
+    ok = validateField(topicField, topic.value !== '') && ok;
+    ok = validateField(name.closest('.field'), name.value.trim().length > 1) && ok;
+    ok = validateField(phone.closest('.field'), /^[6-9]\d{9}$/.test(phone.value.trim())) && ok;
+    ok = validateField(email.closest('.field'), /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) && ok;
+
+    if(!ok) return;
+
+    // Save to Firebase — visible to you in the /registrations node
+    const submission = {
+      type: currentType,
+      topic: topic.value,
+      name: name.value.trim(),
+      phone: phone.value.trim(),
+      email: email.value.trim(),
+      place: document.getElementById('place').value.trim(),
+      timestamp: Date.now()
+    };
+
+    db.ref('registrations').push(submission).catch(err=> console.error('Save failed:', err));
+
+    const c = content[currentType];
+    document.getElementById('successTitle').textContent = c.successTitle;
+    document.getElementById('successSub').textContent = c.successSub;
+    document.getElementById('refCode').textContent = 'Ref: BB-' + Date.now().toString().slice(-6);
+
+    document.getElementById('regForm').style.display = 'none';
+    document.querySelector('.toggle').style.display = 'none';
+    document.getElementById('successBox').style.display = 'block';
+  });
+</script>
+</body>
+</html>
